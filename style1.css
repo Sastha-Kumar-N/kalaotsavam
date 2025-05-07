@@ -1,0 +1,255 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Body Styling */
+body {
+    /* background: linear-gradient(135deg, #590113, #e0d3b3); */
+    background: white;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 100px 20px 20px; /* ✅ top padding accounts for navbar */
+    min-height: 100vh; /* Allow scroll if needed */
+}
+
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    /* background: linear-gradient(135deg, #590113, #e0d3b3); */
+    background: #783137;
+    transition: all 0.3s ease;
+    transform: translateY(0);
+    height: 100px;
+}
+
+.navbar.scrolled {
+    background-color: #c1ba7a;
+}
+
+.navbar.hidden {
+    transform: translateY(-100%);
+}
+
+.logo img {
+    height: 10px; 
+    width: auto;
+}
+
+.left-logo img {
+    height: 60px; /* Custom size for left logo */
+    width: auto;
+}
+
+.right-logo img {
+    height: 90px; /* Custom size for right logo */
+    width: auto;
+    margin-right: 100px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+    text-align: center;
+
+}
+
+.nav-links a {
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    font-weight: 900;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+
+}
+
+.nav-links a:hover {
+    color: #b50346;
+}
+
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+}
+
+.menu-toggle span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+  
+/* Form Container */
+.container {
+    /* background: rgba(255, 255, 255, 0.1); */
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px #783137;
+    width: 800px;
+    backdrop-filter: blur(10px);
+    margin-top: 100px; 
+}
+
+/* Form Heading */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: black;
+
+}
+
+/* Form Fields */
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 18px;
+    color: black;
+    font-weight: 900;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+    color: black;
+    border-color: black;
+    border-style: double;
+    border-width: 2px;
+    background: white;
+
+}
+
+input:focus, select:focus {
+    background: rgb(255, 255, 255);
+}
+
+/* Submit Button */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #783137;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #582428;
+}
+
+/* Add Participant Button */
+#addParticipant {
+    display: none;
+    background: #783137;
+}
+
+#addParticipant:hover {
+    background: #582428;
+}
+
+/* Additional Participants */
+#additionalParticipants {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 800px) {
+    .container {
+        width: 90%;
+    }
+
+    .navbar {
+        background-color: #783137;
+        padding: 15px 5%;
+        height: 80px;
+    }
+    .nav-links {
+        position: fixed;
+        top: 90px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 90px);
+        background-color: rgba(0, 0, 0, 0.9);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        transition: left 0.5s ease;
+    }
+
+    .nav-links {
+    display: flex;
+    gap: 30px;
+    margin-left: 0px;
+    }
+
+    
+    .nav-links.active {
+        left: 0;
+    }
+    
+    .menu-toggle {
+        display: flex;
+    }
+    
+    .menu-toggle.active span:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+    }
+    
+    .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    
+    .menu-toggle.active span:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+    }
+        
+    
+    .logo img {
+        height: 40px;
+    }
+    
+    .left-logo img{
+        height: 30px;
+      }
+    
+      .right-logo img{
+        height: 50px;
+        margin-left: 10px;
+      }
+
+}
+
+

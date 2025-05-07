@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalolstavam ID Card</title>
+    <link rel="stylesheet" href="card.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo left-logo">
+            <img src="ASBT_logo2.jpg" alt="Left Logo" id="leftLogo">
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="kalolstavam.html">Kalotsavam</a>
+        </div>
+        <div class="logo right-logo">
+            <img src="creatome_white.png" alt="Right Logo" id="rightLogo">
+        </div>
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div id="cardContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get URL parameters
+            const params = new URLSearchParams(window.location.search);
+            const name = params.get("name");
+            const roll_number = params.get("roll_number");
+            const degree = params.get("degree");
+            const year = params.get("year");
+            const course = params.get("course");
+            const chest_number = params.get("chest_number");
+
+            if (!name || !roll_number) {
+                document.getElementById("cardContainer").innerHTML = "<p>Invalid data. Please try again.</p>";
+                return;
+            }
+
+            // Inject the ID Card HTML inside the container
+            document.getElementById("cardContainer").innerHTML = `
+                <div class="card-wrapper">
+                    <div id="idCard" class="id-card">
+                        <h2>Chest Number</h2>
+                        <p><strong>Name:</strong> ${name}</p>
+                        <p><strong>Roll Number:</strong> ${roll_number}</p>
+                        <p><strong>Degree:</strong> ${degree}</p>
+                        <p><strong>Year:</strong> ${year}</p>
+                        <p><strong>Course:</strong> ${course}</p>
+                        <p><strong>Chest Number:</strong> ${chest_number}</p>
+                    </div>
+                    <button id="downloadCard">Download Card</button>
+                </div>
+            `;
+
+            // Download Button Functionality
+            document.getElementById("downloadCard").addEventListener("click", function () {
+                html2canvas(document.getElementById("idCard")).then(canvas => {
+                    let link = document.createElement("a");
+                    link.href = canvas.toDataURL("image/png");
+                    link.download = "Chest Number.png";
+                    link.click();
+                });
+            });
+
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            menuToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                menuToggle.classList.toggle('active');
+            });
+            
+
+            let lastScroll = 0;
+            const navbar = document.querySelector('.navbar');
+            
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll <= 0) {
+                // At top of page - always show navbar
+                navbar.classList.remove('hidden');
+                return;
+                }
+                
+                if (currentScroll > lastScroll && !navbar.classList.contains('hidden')) {
+                // Scrolling down - hide navbar
+                navbar.classList.add('hidden');
+                } else if (currentScroll < lastScroll && navbar.classList.contains('hidden')) {
+                // Scrolling up - show navbar
+                navbar.classList.remove('hidden');
+                }
+                
+                lastScroll = currentScroll;
+            });
+        });
+    </script>
+
+
+
+</body>
+</html>
