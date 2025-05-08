@@ -1,8 +1,8 @@
-# Disable directory listing
+# Disable directory listing 
 Options -Indexes
 
 # Set default page when accessing directory
-DirectoryIndex dashboard.php
+DirectoryIndex index1.html
 
 # Redirect www to non-www (optional)
 # RewriteEngine On
