@@ -14,14 +14,13 @@ if (!isset($_SESSION['username'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration Dashboard</title>
-    <link rel="icon" href="title_logo.png" type="image/png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="logo left-logo">
-            <img src="ASBT_logo.png" alt="Left Logo" id="leftLogo">
+            <img src="ASBT_logo2.jpg" alt="Left Logo" id="leftLogo">
         </div>
         <div class="nav-links1">
             <a href="index.html">ASBT Kalotsavam</a>
@@ -39,12 +38,9 @@ if (!isset($_SESSION['username'])) {
             <img src="creatome_white.png" alt="Right Logo" id="rightLogo">
         </div>
     </nav>
-    
 
 
     <div class="function-container">
-        <button id="registration-btn" class="registration-btn" onclick="toggleRegistration()">Close Registration</button>
-        <button id="leader-btn" class="leaderboard-btn" onclick="toggleLeaderboard()">Leaderboard ON</button>
         <button class="score-btn" onclick="score()">Update Score</button>
         <button class="addevent-btn" onclick="addevent()">Add Event</button>
         <button class="edit-btn" onclick="openEditDialog()">Edit</button>
@@ -52,9 +48,8 @@ if (!isset($_SESSION['username'])) {
         <button class="download-btn" onclick="downloadExcel()">Download</button>  
         <button id="submitScores" class="download-btn">Submit</button>
         <button class="logout-btn" onclick="logout()">Logout</button>
+        
     </div>
-
-
     <div class="container">
         <h2></h2>
         <div class="filter">
@@ -88,7 +83,7 @@ if (!isset($_SESSION['username'])) {
         <!-- Filter Options -->
        
 
-        <div id="editDialog" class="modal" style="display: none; border: 1px solid black;">
+        <div id="editDialog" class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close" onclick="closeEditDialog()">&times;</span>
                 <h2>Edit Participant Details </h2>
@@ -175,30 +170,6 @@ if (!isset($_SESSION['username'])) {
             <button onclick="addEventInput(true)">Add Group Event</button>
             <button onclick="submitNewEvents()">Add Events</button>
             <!-- <button onclick="closeAddEventDialog()">Cancel</button> -->
-        </div>
-
-        <!-- Leaderboard Off Modal -->
-        <div id="leaderboardOffModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h3>Set Leaderboard Off Duration</h3>
-                <div class="time-inputs">
-                <div>
-                    <label>Hours:</label>
-                    <input type="number" id="offHours" min="0" max="23" value="0">
-                </div>
-                <div>
-                    <label>Minutes:</label>
-                    <input type="number" id="offMinutes" min="0" max="59" value="30">
-                </div>
-                <div>
-                    <label>Seconds:</label>
-                    <input type="number" id="offSeconds" min="0" max="59" value="0">
-                </div>
-                </div>
-                <button class="confirm-btn" onclick="confirmLeaderboardOff()">Confirm</button>
-                <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-            </div>
         </div>
 
 

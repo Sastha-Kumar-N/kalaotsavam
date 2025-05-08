@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
     fetch("event_result.php")
         .then(res => res.json())

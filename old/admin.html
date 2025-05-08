@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo left-logo">
+            <img src="ASBT_logo2.jpg" alt="Left Logo" id="leftLogo">
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="leaderboard.html">Leaderboard</a>
+        </div>
+        <div class="logo right-logo">
+            <img src="creatome_white.png" alt="Right Logo" id="rightLogo">
+        </div>
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <img src="kalotsavam_logo.png" alt="Main Logo" class="page-logo">
+            <h1>ASBT Kalotsavam</h1>
+        </div>
+        
+        <div class="login-container">
+            <form action="login.php" method="POST">
+                <h2>Admin Login</h2>
+
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Mobile menu toggle
+          const menuToggle = document.querySelector('.menu-toggle');
+          const navLinks = document.querySelector('.nav-links');
+          
+          menuToggle.addEventListener('click', function() {
+              navLinks.classList.toggle('active');
+              menuToggle.classList.toggle('active');
+          });
+          
+
+          let lastScroll = 0;
+          const navbar = document.querySelector('.navbar');
+          
+          window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+              // At top of page - always show navbar
+              navbar.classList.remove('hidden');
+              return;
+            }
+            
+            if (currentScroll > lastScroll && !navbar.classList.contains('hidden')) {
+              // Scrolling down - hide navbar
+              navbar.classList.add('hidden');
+            } else if (currentScroll < lastScroll && navbar.classList.contains('hidden')) {
+              // Scrolling up - show navbar
+              navbar.classList.remove('hidden');
+            }
+            
+            lastScroll = currentScroll;
+          });
+      });
+    </script>
+</body>
+</html>

@@ -15,9 +15,9 @@ function loadEventLists(callback) {
             individual_off = data.individual_off;
             group_events = data.group;
 
-            // console.log("Individual Events:", individual_on);
-            // console.log("Individual Events:", individual_off);
-            // console.log("Group Events:", group_events);
+            console.log("Individual Events:", individual_on);
+            console.log("Individual Events:", individual_off);
+            console.log("Group Events:", group_events);
 
             if (callback) callback(); // Populate dropdowns after events are loaded
         })

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASBT Kalotsavam - Loading</title>
+    <link rel="icon" href="title_logo.png" type="image/png">
+    <link rel="stylesheet" href="loader.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> 
+
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo left-logo">
+            <img src="ASBT_logo.png" alt="Left Logo" id="leftLogo">
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+        </div>
+        <div class="logo right-logo">
+            <img src="creatome_white.png" alt="Right Logo" id="rightLogo">
+        </div>
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="leaderboard-message" id="message">
+        <h1>Leaderboard will be available in:</h1>
+    </div>
+    
+    <div id="clockdiv">
+        <div>
+            <span class="days" id="day"></span>
+            <div class="smalltext">Days</div>
+        </div>
+        <div>
+            <span class="hours" id="hour"></span>
+            <div class="smalltext">Hours</div>
+        </div>
+        <div>
+            <span class="minutes" id="minute"></span>
+            <div class="smalltext">Minutes</div>
+        </div>
+        <div>
+            <span class="seconds" id="second"></span>
+            <div class="smalltext">Seconds</div>
+        </div>
+    </div>
+
+    <script>
+        function updateTimerDisplay(ms) {
+            const seconds = Math.floor((ms / 1000) % 60);
+            const minutes = Math.floor((ms / (1000 * 60)) % 60);
+            const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+            
+            document.getElementById("day").textContent = days.toString().padStart(2, '0');
+            document.getElementById("hour").textContent = hours.toString().padStart(2, '0');
+            document.getElementById("minute").textContent = minutes.toString().padStart(2, '0');
+            document.getElementById("second").textContent = seconds.toString().padStart(2, '0');
+        }
+    
+        function checkLeaderboardState() {
+            const savedState = localStorage.getItem('leaderboardState');
+            if (!savedState) {
+                window.location.href = 'leaderboard.html';
+                return;
+            }
+            
+            const { isOn, endTime } = JSON.parse(savedState);
+            const now = Date.now();
+            
+            if (isOn || !endTime) {
+                // Leaderboard is ON - redirect immediately
+                window.location.href = 'leaderboard.html';
+            } else if (now >= endTime) {
+                // Timer expired - update state and redirect
+                localStorage.setItem('leaderboardState', JSON.stringify({
+                    isOn: true,
+                    endTime: null
+                }));
+                window.location.href = 'leaderboard.html';
+            } else {
+                // Show countdown
+                const remaining = endTime - now;
+                updateTimerDisplay(remaining);
+                
+                // Update every second
+                const timer = setInterval(() => {
+                    const updatedRemaining = endTime - Date.now();
+                    if (updatedRemaining <= 0) {
+                        clearInterval(timer);
+                        localStorage.setItem('leaderboardState', JSON.stringify({
+                            isOn: true,
+                            endTime: null
+                        }));
+                        window.location.href = 'leaderboard.html';
+                    } else {
+                        updateTimerDisplay(updatedRemaining);
+                    }
+                }, 1000);
+            }
+        }
+    
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Your existing navbar code
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            menuToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                menuToggle.classList.toggle('active');
+            });
+    
+            let lastScroll = 0;
+            const navbar = document.querySelector('.navbar');
+            
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll <= 0) {
+                    navbar.classList.remove('hidden');
+                    return;
+                }
+                
+                if (currentScroll > lastScroll && !navbar.classList.contains('hidden')) {
+                    navbar.classList.add('hidden');
+                } else if (currentScroll < lastScroll && navbar.classList.contains('hidden')) {
+                    navbar.classList.remove('hidden');
+                }
+                
+                lastScroll = currentScroll;
+            });
+    
+            // Check leaderboard state
+            checkLeaderboardState();
+        });
+    </script>
+</body>
+</html>

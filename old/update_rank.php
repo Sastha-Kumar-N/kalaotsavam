@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 $servername = "localhost";
 $username = "root";  
 $password = "";      
-$database = "ASBT_Kalotsavam";
+$database = "ASBT_Kalolstavam";
 
 $conn = new mysqli($servername, $username, $password, $database);
 

@@ -4,7 +4,7 @@
 $host = "localhost";
 $user = "root";
 $password = "";
-$dbname = "ASBT_Kalotsavam";
+$dbname = "ASBT_Kalolstavam";
 
 $conn = new mysqli($host, $user, $password, $dbname);
 if ($conn->connect_error) {

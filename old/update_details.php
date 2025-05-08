@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 $host = "localhost";
 $username = "root"; // Change if needed
 $password = ""; // Change if needed
-$database = "ASBT_Kalotsavam"; // Change to your DB name
+$database = "ASBT_Kalolstavam"; // Change to your DB name
 
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {

@@ -4,7 +4,7 @@ session_start(); // Start session to store login state
 $host = "localhost"; // Change if necessary
 $user = "root"; // Change to your database username
 $password = ""; // Change to your database password
-$database = "ASBT_Kalotsavam"; // Database name
+$database = "ASBT_Kalolstavam"; // Database name
 
 // Create a connection
 $conn = new mysqli($host, $user, $password, $database);

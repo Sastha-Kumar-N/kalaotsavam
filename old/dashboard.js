@@ -20,10 +20,10 @@ function loadEventLists() {
 
             group_events = data.group;
 
-            // console.log("Individual Events On_Stage:", individual_events_on);
-            // console.log("Individual Events Off_Stage:", individual_events_off);
+            console.log("Individual Events On_Stage:", individual_events_on);
+            console.log("Individual Events Off_Stage:", individual_events_off);
 
-            // console.log("Group Events:", group_events);
+            console.log("Group Events:", group_events);
 
             // You can now use these to populate dropdowns, etc.
             // populateEventDropdowns();
@@ -39,199 +39,17 @@ document.addEventListener("DOMContentLoaded", loadEventLists);
 
 
 
-// Leaderboard state management
-
-// Leaderboard state manager
-const leaderboardManager = {
-    state: { isOn: true, endTime: null },
-    channel: new BroadcastChannel('leaderboard_updates'),
-
-    init() {
-        // Load saved state
-        const saved = localStorage.getItem('leaderboardState');
-        if (saved) this.state = JSON.parse(saved);
-        
-        // Check if timer expired
-        if (!this.state.isOn && this.state.endTime && Date.now() > this.state.endTime) {
-            this.setState(true);
-        }
-        
-        this.updateButton();
-        this.setupListeners();
-    },
-
-    setState(isOn, duration = 0) {
-        this.state.isOn = isOn;
-        this.state.endTime = isOn ? null : Date.now() + duration;
-        
-        localStorage.setItem('leaderboardState', JSON.stringify(this.state));
-        this.channel.postMessage({ type: 'stateUpdate', state: this.state });
-        
-        // Set timeout to return to ON if duration specified
-        if (!isOn && duration > 0) {
-            setTimeout(() => this.setState(true), duration);
-        }
-        
-        this.updateButton();
-    },
-
-    updateButton() {
-        const btn = document.getElementById('leader-btn');
-        if (!btn) return;
-        
-        btn.textContent = this.state.isOn ? 'Leaderboard ON' : 'Leaderboard OFF';
-        btn.style.backgroundColor = this.state.isOn ? '#cd0947' : '#cd0947';
-    },
-
-    setupListeners() {
-        this.channel.addEventListener('message', (e) => {
-            if (e.data.type === 'stateUpdate') {
-                this.state = e.data.state;
-                this.updateButton();
-            }
-        });
-    }
-};
-
-// UI Functions
-function toggleLeaderboard() {
-    if (leaderboardManager.state.isOn) {
-        document.getElementById('leaderboardOffModal').style.display = 'block';
-    } else {
-        leaderboardManager.setState(true);
-    }
-}
-
-function confirmLeaderboardOff() {
-    const hours = parseInt(document.getElementById('offHours').value) || 0;
-    const minutes = parseInt(document.getElementById('offMinutes').value) || 0;
-    const seconds = parseInt(document.getElementById('offSeconds').value) || 0;
-    
-    const duration = (hours * 3600 + minutes * 60 + seconds) * 1000;
-    leaderboardManager.setState(false, duration);
-    closeModal();
-}
-
-function closeModal() {
-    document.getElementById('leaderboardOffModal').style.display = 'none';
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => leaderboardManager.init());
-
-// Registration Management System
-const registrationManager = {
-    status: true, // true = open, false = closed
-    storageKey: 'registrationStatus',
-    
-    init() {
-        // Load saved status
-        const saved = localStorage.getItem(this.storageKey);
-        if (saved) this.status = JSON.parse(saved);
-        
-        // Update button on page load
-        this.updateButton();
-        
-        // Check if kalotsavam.html should be accessible
-        if (window.location.pathname.includes('kalotsavam.html') && !this.status) {
-            window.location.href = 'closed.html';
-        }
-    },
-    
-    toggleStatus() {
-        this.status = !this.status;
-        localStorage.setItem(this.storageKey, JSON.stringify(this.status));
-        this.updateButton();
-        
-        // Broadcast to all tabs
-        if (typeof BroadcastChannel !== 'undefined') {
-            const channel = new BroadcastChannel('registration_updates');
-            channel.postMessage({ status: this.status });
-        }
-        
-        // If closing, redirect any open kalotsavam pages
-        if (!this.status) {
-            this.redirectOpenPages();
-        }
-        
-        return this.status;
-    },
-    
-    updateButton() {
-        const btn = document.getElementById('registration-btn');
-        if (btn) {
-            btn.textContent = this.status ? 'Close Registration' : 'Open Registration';
-            btn.classList.toggle('closed', !this.status);
-        }
-    },
-    
-    redirectOpenPages() {
-        // console.log('Registration closed - redirecting any open registration pages');
-    }
-};
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    registrationManager.init();
-    
-    // Listen for status changes from other tabs
-    if (typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel('registration_updates');
-        channel.addEventListener('message', (e) => {
-            if (e.data && typeof e.data.status !== 'undefined') {
-                registrationManager.status = e.data.status;
-                registrationManager.updateButton();
-            }
-        });
-    }
-});
-
-// Button click handler
-function toggleRegistration() {
-    const newStatus = registrationManager.toggleStatus();
-    
-    if (!newStatus) {
-        // Registration was just closed
-        alert('Registration is now closed.');
-    } else {
-        // Registration was just opened
-        alert('Registration is now open.');
-    }
-}
-
-
-
 function logout() {
     window.location.href = "logout.php";
 }
 
 function downloadExcel() {
     let table = document.getElementById("eventTable");
-    let tableClone = table.cloneNode(true);
-    
-    // Process all cells in the table
-    Array.from(tableClone.querySelectorAll('td')).forEach(cell => {
-        if (cell.querySelector('select')) {
-            // This is a registered event - just show "Yes" regardless of rank selection
-            cell.textContent = 'Yes';
-        } else {
-            // Check for any "No" indication
-            const content = cell.textContent.trim();
-            if (content === "No" || content.includes("No (Not Registered)")) {
-                cell.textContent = 'No';
-            }
-        }
-    });
-    
-    // Convert to worksheet
-    let ws = XLSX.utils.table_to_sheet(tableClone);
-    
-    // Create workbook and export
+    let ws = XLSX.utils.table_to_sheet(table);
     let wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Event Data");
     XLSX.writeFile(wb, "Event_Registration.xlsx");
 }
-
 
 document.getElementById("submitScores").addEventListener("click", function () {
     let rankUpdates = [];
@@ -254,7 +72,7 @@ document.getElementById("submitScores").addEventListener("click", function () {
             }
         });
     });
-    // console.log("Rank updates to be sent:", rankUpdates);
+    console.log("Rank updates to be sent:", rankUpdates);
     if (rankUpdates.length > 0) {
         fetch("update_rank.php", {
             method: "POST",
@@ -263,7 +81,7 @@ document.getElementById("submitScores").addEventListener("click", function () {
         })
         .then(response => response.text())
         .then(data => {
-            // console.log("Ranks updated successfully!", data);
+            console.log("Ranks updated successfully!", data);
             alert("Ranks updated successfully!");
             fetchEventResults(); // Reload ranks after update
         })
@@ -279,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("event.php")
         .then(response => response.json())
         .then(data => {
-            // console.log("Event Registration Data:", data);
+            console.log("Event Registration Data:", data);
             if (data.length === 0) return;
 
             eventData = data;
@@ -468,11 +286,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function fetchEventResults() {
-    // console.log("Fetching event results...");
+    console.log("Fetching event results...");
     fetch("event_result.php?t=" + new Date().getTime())
         .then(response => response.json())
         .then(resultData => {
-            // console.log("Event Result Data:", resultData);
+            console.log("Event Result Data:", resultData);
             document.querySelectorAll("#eventTable tbody tr").forEach(row => {
                 let rollNumber = row.querySelector("td:nth-child(2)").textContent.trim();
 
@@ -486,7 +304,7 @@ function fetchEventResults() {
 
                     if (participantResult) {
                         select.value = participantResult.Rank;
-                        // console.log(`Updating: ${rollNumber} - ${eventName} → ${participantResult.Rank}`);
+                        console.log(`Updating: ${rollNumber} - ${eventName} → ${participantResult.Rank}`);
                     }
                 });
             });
@@ -590,7 +408,7 @@ function searchParticipant() {
                 let select = document.createElement("select");
                 select.classList.add("edit_event");
                 select.id = `edit_event${index + 1}`;
-                // console.log(`Created select with ID: ${select.id}`);
+                console.log(`Created select with ID: ${select.id}`);
             
                 // Populate dropdown with correct event list
                 let eventOptions;
@@ -680,7 +498,7 @@ document.getElementById("updateParticipant").addEventListener("click", function 
     })
     .then(response => response.text())
     .then(data => {
-        // console.log("Response from server:", data);
+        console.log("Response from server:", data);
         alert("Participant updated successfully!");
         closeEditDialog();  // Close modal
         fetchEventResults(); // Refresh the table
@@ -748,7 +566,7 @@ function disableSelectedEvents() {
     })
     .then(response => response.text())
     .then(data => {
-        // console.log("Disabled events updated:", data);
+        console.log("Disabled events updated:", data);
         applyDisabledEvents();
         closeDisableDialog();
     })
@@ -775,7 +593,7 @@ function enableSelectedEvents() {
     })
     .then(response => response.text())
     .then(data => {
-        // console.log("Events enabled:", data);
+        console.log("Events enabled:", data);
         applyDisabledEvents();   // Refresh UI to reflect enabled state
         closeDisableDialog();    // Close dialog
     })
@@ -968,14 +786,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 messageDiv.textContent = data;
                 messageDiv.style.color = "green";
             }
-            
-            // Close the dialog after successful submission
-            closeupdatescoreDialog();
-            
-            // Optional: Clear the message after a few seconds
-            setTimeout(() => {
-                if (messageDiv) messageDiv.textContent = "";
-            }, 3000);
         })
         .catch(error => {
             console.error("Error:", error);
@@ -987,3 +797,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
