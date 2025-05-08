@@ -337,7 +337,7 @@ th:nth-child(1), th:nth-child(2), th:nth-child(6), th:nth-child(7) {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
-    width: 400px;
+    width: 450px;
     max-height: 80vh; /* Limit height to 80% of the viewport */
     overflow-y: auto; /* Enable vertical scrolling if content overflows */
     text-align: center;
@@ -398,6 +398,19 @@ th:nth-child(1), th:nth-child(2), th:nth-child(6), th:nth-child(7) {
 
 .update-btn:hover {
     background-color: #218838;
+}
+
+.delete-btn {
+    background-color: rgb(160, 7, 7);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: rgb(134, 8, 8);
 }
 
 .search-btn {

@@ -196,15 +196,30 @@ h1 {
   padding: 10px;
 } */
 
-.event-list p {
+.event-list ol {
   padding: 15px;
   margin: 10px 0;
   background-color: #f9f9f9;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  overflow-y: auto;
   border-radius: 10px;
+  overflow-y: auto;
+}
+
+.event-list ol li {
+  margin-bottom: 10px;
   font-weight: 600;
+  cursor: default; /* or pointer if items are clickable */
+  margin-left: 20px;
+}
+
+
+.event-list p {
+  padding: 15px;
+  margin-top: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  font-style: italic;
+  text-align: center;
+  font-weight: 700;
 }
 
 
