@@ -143,13 +143,28 @@
         });
 
 
+
+        let checkInterval = null;
+
+        function checkRegistrationStatus() {
+            fetch('registration_status.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === false) {
+                        window.location.href = 'closed.html';
+                    }
+                })
+                .catch(err => console.error('Status check failed', err));
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('registrationStatus');
-            if (saved && !JSON.parse(saved)) {
-                window.location.href = 'closed.html';
-            }
-            
-            // Listen for status changes
+            // Initial check on page load
+            checkRegistrationStatus();
+
+            // Poll every 5 seconds
+            checkInterval = setInterval(checkRegistrationStatus, 5000);
+
+            // Optional: Listen for real-time updates (only works if BroadcastChannel is used)
             if (typeof BroadcastChannel !== 'undefined') {
                 const channel = new BroadcastChannel('registration_updates');
                 channel.addEventListener('message', (e) => {

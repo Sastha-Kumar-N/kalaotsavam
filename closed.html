@@ -67,13 +67,20 @@
         });
 
 
-        // Optional: Check if registration reopens
+
         setInterval(() => {
-            const saved = localStorage.getItem('registrationStatus');
-            if (saved && JSON.parse(saved)) {
-                window.location.href = 'kalotsavam.html';
-            }
+            fetch('registration_status.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === true) {
+                        window.location.href = 'kalotsavam.html';
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to check registration status', err);
+                });
         }, 3000); // Check every 3 seconds
+
 
 
     </script>

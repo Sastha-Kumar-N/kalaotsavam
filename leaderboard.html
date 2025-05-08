@@ -124,68 +124,80 @@
 
     <script>
         // Leaderboard State Management
-        function checkLeaderboardState() {
-            const savedState = localStorage.getItem('leaderboardState');
-            if (!savedState) return;
-            
-            const { isOn, endTime } = JSON.parse(savedState);
-            const now = Date.now();
-            
-            if (!isOn && endTime) {
-                if (now < endTime) {
-                    // Leaderboard is OFF and timer is active - redirect to loader
+        async function checkLeaderboardState() {
+            try {
+                const res = await fetch('leaderboard_status.php');
+                const data = await res.json();
+
+                if (!data.success) return false;
+
+                const isOn = data.isOn;
+                const endTime = data.endTime;
+                const now = Date.now();
+
+                if (!isOn && endTime && now < endTime) {
+                    // Leaderboard is OFF and still within countdown → redirect to loader.html
                     window.location.href = 'loader.html';
-                    return true; // Indicates redirect is happening
-                } else {
-                    // Timer expired - update state to ON
-                    localStorage.setItem('leaderboardState', JSON.stringify({
-                        isOn: true,
-                        endTime: null
-                    }));
+                    return true; // Stop further execution and redirect
                 }
+
+                // If timer expired but still off, update DB (optional)
+                if (!isOn && endTime && now >= endTime) {
+                    await fetch('leaderboard_status.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isOn: true, endTime: null })
+                    });
+                }
+            } catch (error) {
+                console.error('Error checking leaderboard state:', error);
             }
-            return false; // No redirect needed
+
+            return false;
         }
-    
+
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // First check leaderboard state
-            if (checkLeaderboardState()) {
+            const isRedirecting = await checkLeaderboardState();
+            if (isRedirecting) {
                 return; // Stop execution if redirecting
             }
-            
+
             // Your existing mobile menu and scroll behavior code
             const menuToggle = document.querySelector('.menu-toggle');
             const navLinks = document.querySelector('.nav-links');
-            
+
             menuToggle.addEventListener('click', function() {
                 navLinks.classList.toggle('active');
                 menuToggle.classList.toggle('active');
             });
-    
+
             let lastScroll = 0;
             const navbar = document.querySelector('.navbar');
-            
+
             window.addEventListener('scroll', () => {
                 const currentScroll = window.pageYOffset;
-                
+
                 if (currentScroll <= 0) {
                     navbar.classList.remove('hidden');
                     return;
                 }
-                
+
                 if (currentScroll > lastScroll && !navbar.classList.contains('hidden')) {
                     navbar.classList.add('hidden');
                 } else if (currentScroll < lastScroll && navbar.classList.contains('hidden')) {
                     navbar.classList.remove('hidden');
                 }
-                
+
                 lastScroll = currentScroll;
             });
-    
-            // Check every 1 seconds
-            setInterval(checkLeaderboardState, 1000);
         });
+
+        // Check leaderboard state every 3 seconds (instead of every 1 second)
+        setInterval(async () => {
+            await checkLeaderboardState();
+        }, 3000); // Check every 3 seconds
     </script>
 </body>
 </html>

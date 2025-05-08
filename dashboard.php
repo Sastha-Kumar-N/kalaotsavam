@@ -43,7 +43,7 @@ if (!isset($_SESSION['username'])) {
 
 
     <div class="function-container">
-        <button id="registration-btn" class="registration-btn" onclick="toggleRegistration()">Close Registration</button>
+        <button id="registration-btn" class="registration-btn" onclick="registrationManager.toggleStatus()">Close Registration</button>
         <button id="leader-btn" class="leaderboard-btn" onclick="toggleLeaderboard()">Leaderboard ON</button>
         <button class="score-btn" onclick="score()">Update Score</button>
         <button class="addevent-btn" onclick="addevent()">Add Event</button>

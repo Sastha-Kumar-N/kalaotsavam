@@ -39,48 +39,81 @@ document.addEventListener("DOMContentLoaded", loadEventLists);
 
 
 
-// Leaderboard state management
 
 // Leaderboard state manager
+
 const leaderboardManager = {
     state: { isOn: true, endTime: null },
     channel: new BroadcastChannel('leaderboard_updates'),
 
-    init() {
-        // Load saved state
-        const saved = localStorage.getItem('leaderboardState');
-        if (saved) this.state = JSON.parse(saved);
-        
-        // Check if timer expired
-        if (!this.state.isOn && this.state.endTime && Date.now() > this.state.endTime) {
-            this.setState(true);
+    async init() {
+        try {
+            const res = await fetch('leaderboard_status.php');
+            const data = await res.json();
+
+            if (data.success) {
+                this.state = {
+                    isOn: data.isOn,
+                    endTime: data.endTime
+                };
+
+                // Check if expired
+                if (!this.state.isOn && this.state.endTime && Date.now() > this.state.endTime) {
+                    await this.setState(true);
+                }
+
+                this.updateButton();
+                this.setupListeners();
+
+                // Optional: Auto-enable when time expires (check every 3 sec)
+                setInterval(() => {
+                    if (!this.state.isOn && this.state.endTime && Date.now() > this.state.endTime) {
+                        this.setState(true);
+                    }
+                }, 3000);
+            } else {
+                console.error("Failed to load state:", data.error);
+            }
+        } catch (err) {
+            console.error('Error fetching leaderboard status:', err);
         }
-        
-        this.updateButton();
-        this.setupListeners();
     },
 
-    setState(isOn, duration = 0) {
-        this.state.isOn = isOn;
-        this.state.endTime = isOn ? null : Date.now() + duration;
-        
-        localStorage.setItem('leaderboardState', JSON.stringify(this.state));
-        this.channel.postMessage({ type: 'stateUpdate', state: this.state });
-        
-        // Set timeout to return to ON if duration specified
-        if (!isOn && duration > 0) {
-            setTimeout(() => this.setState(true), duration);
+    async setState(isOn, duration = 0) {
+        const endTime = isOn ? null : Date.now() + duration;
+        this.state = { isOn, endTime };
+
+        try {
+            const res = await fetch('leaderboard_status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.state)
+            });
+
+            const result = await res.json();
+            if (!result.success) {
+                console.error("Failed to update state:", result);
+                return;
+            }
+
+            this.channel.postMessage({ type: 'stateUpdate', state: this.state });
+
+            if (!isOn && duration > 0) {
+                setTimeout(() => this.setState(true), duration);
+            }
+
+            this.updateButton();
+        } catch (err) {
+            console.error('Error updating leaderboard state:', err);
         }
-        
-        this.updateButton();
     },
 
     updateButton() {
         const btn = document.getElementById('leader-btn');
         if (!btn) return;
-        
+
         btn.textContent = this.state.isOn ? 'Leaderboard ON' : 'Leaderboard OFF';
-        btn.style.backgroundColor = this.state.isOn ? '#cd0947' : '#cd0947';
+        btn.style.backgroundColor = '#cd0947';
     },
 
     setupListeners() {
@@ -93,7 +126,7 @@ const leaderboardManager = {
     }
 };
 
-// UI Functions
+// Toggle button logic
 function toggleLeaderboard() {
     if (leaderboardManager.state.isOn) {
         document.getElementById('leaderboardOffModal').style.display = 'block';
@@ -106,7 +139,7 @@ function confirmLeaderboardOff() {
     const hours = parseInt(document.getElementById('offHours').value) || 0;
     const minutes = parseInt(document.getElementById('offMinutes').value) || 0;
     const seconds = parseInt(document.getElementById('offSeconds').value) || 0;
-    
+
     const duration = (hours * 3600 + minutes * 60 + seconds) * 1000;
     leaderboardManager.setState(false, duration);
     closeModal();
@@ -116,88 +149,48 @@ function closeModal() {
     document.getElementById('leaderboardOffModal').style.display = 'none';
 }
 
-// Initialize
+// Init
 document.addEventListener('DOMContentLoaded', () => leaderboardManager.init());
+
 
 // Registration Management System
 const registrationManager = {
-    status: true, // true = open, false = closed
-    storageKey: 'registrationStatus',
-    
+    status: true,
     init() {
-        // Load saved status
-        const saved = localStorage.getItem(this.storageKey);
-        if (saved) this.status = JSON.parse(saved);
-        
-        // Update button on page load
-        this.updateButton();
-        
-        // Check if kalotsavam.html should be accessible
-        if (window.location.pathname.includes('kalotsavam.html') && !this.status) {
-            window.location.href = 'closed.html';
-        }
+        fetch('registration_status.php')
+            .then(res => res.json())
+            .then(data => {
+                this.status = data.status;
+                this.updateButton();
+                if (window.location.pathname.includes('kalotsavam.html') && !this.status) {
+                    window.location.href = 'closed.html';
+                }
+            });
     },
-    
     toggleStatus() {
         this.status = !this.status;
-        localStorage.setItem(this.storageKey, JSON.stringify(this.status));
-        this.updateButton();
-        
-        // Broadcast to all tabs
-        if (typeof BroadcastChannel !== 'undefined') {
-            const channel = new BroadcastChannel('registration_updates');
-            channel.postMessage({ status: this.status });
-        }
-        
-        // If closing, redirect any open kalotsavam pages
-        if (!this.status) {
-            this.redirectOpenPages();
-        }
-        
+        fetch('registration_status.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: this.status })
+        })
+        .then(res => res.json())
+        .then(() => {
+            this.updateButton();
+            alert(`Registration is now ${this.status ? 'open' : 'closed'}.`);
+        });
         return this.status;
     },
-    
     updateButton() {
         const btn = document.getElementById('registration-btn');
         if (btn) {
             btn.textContent = this.status ? 'Close Registration' : 'Open Registration';
             btn.classList.toggle('closed', !this.status);
         }
-    },
-    
-    redirectOpenPages() {
-        // console.log('Registration closed - redirecting any open registration pages');
     }
 };
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    registrationManager.init();
-    
-    // Listen for status changes from other tabs
-    if (typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel('registration_updates');
-        channel.addEventListener('message', (e) => {
-            if (e.data && typeof e.data.status !== 'undefined') {
-                registrationManager.status = e.data.status;
-                registrationManager.updateButton();
-            }
-        });
-    }
-});
-
-// Button click handler
-function toggleRegistration() {
-    const newStatus = registrationManager.toggleStatus();
-    
-    if (!newStatus) {
-        // Registration was just closed
-        alert('Registration is now closed.');
-    } else {
-        // Registration was just opened
-        alert('Registration is now open.');
-    }
-}
+document.addEventListener('DOMContentLoaded', () => registrationManager.init());
 
 
 

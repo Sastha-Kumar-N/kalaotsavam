@@ -52,58 +52,71 @@
 
     <script>
         function updateTimerDisplay(ms) {
-            const seconds = Math.floor((ms / 1000) % 60);
-            const minutes = Math.floor((ms / (1000 * 60)) % 60);
-            const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-            const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+            const totalSeconds = Math.floor(ms / 1000);
             
-            document.getElementById("day").textContent = days.toString().padStart(2, '0');
-            document.getElementById("hour").textContent = hours.toString().padStart(2, '0');
-            document.getElementById("minute").textContent = minutes.toString().padStart(2, '0');
-            document.getElementById("second").textContent = seconds.toString().padStart(2, '0');
+            const days = Math.floor(totalSeconds / (3600 * 24));
+            const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            document.getElementById('day').textContent = String(days).padStart(2, '0');
+            document.getElementById('hour').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minute').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('second').textContent = String(seconds).padStart(2, '0');
         }
     
-        function checkLeaderboardState() {
-            const savedState = localStorage.getItem('leaderboardState');
-            if (!savedState) {
+        // Function to check leaderboard state
+        async function checkLeaderboardState() {
+            try {
+                const res = await fetch('leaderboard_status.php');
+                const data = await res.json();
+
+                if (!data.success) {
+                    // Something went wrong — allow access
+                    window.location.href = 'leaderboard.html';
+                    return;
+                }
+
+                const { isOn, endTime } = data;
+                const now = Date.now();
+
+                if (isOn || !endTime) {
+                    window.location.href = 'leaderboard.html';
+                } else if (now >= endTime) {
+                    // Timer expired — update state in DB and redirect
+                    await fetch('leaderboard_status.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isOn: true, endTime: null })
+                    });
+                    window.location.href = 'leaderboard.html';
+                } else {
+                    // Show countdown
+                    updateTimerDisplay(endTime - now);
+
+                    const timer = setInterval(async () => {
+                        const remaining = endTime - Date.now();
+                        if (remaining <= 0) {
+                            clearInterval(timer);
+                            await fetch('leaderboard_status.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ isOn: true, endTime: null })
+                            });
+                            window.location.href = 'leaderboard.html';
+                        } else {
+                            updateTimerDisplay(remaining);
+                        }
+                    }, 1000);
+                }
+            } catch (err) {
+                console.error('Error checking leaderboard state:', err);
                 window.location.href = 'leaderboard.html';
-                return;
-            }
-            
-            const { isOn, endTime } = JSON.parse(savedState);
-            const now = Date.now();
-            
-            if (isOn || !endTime) {
-                // Leaderboard is ON - redirect immediately
-                window.location.href = 'leaderboard.html';
-            } else if (now >= endTime) {
-                // Timer expired - update state and redirect
-                localStorage.setItem('leaderboardState', JSON.stringify({
-                    isOn: true,
-                    endTime: null
-                }));
-                window.location.href = 'leaderboard.html';
-            } else {
-                // Show countdown
-                const remaining = endTime - now;
-                updateTimerDisplay(remaining);
-                
-                // Update every second
-                const timer = setInterval(() => {
-                    const updatedRemaining = endTime - Date.now();
-                    if (updatedRemaining <= 0) {
-                        clearInterval(timer);
-                        localStorage.setItem('leaderboardState', JSON.stringify({
-                            isOn: true,
-                            endTime: null
-                        }));
-                        window.location.href = 'leaderboard.html';
-                    } else {
-                        updateTimerDisplay(updatedRemaining);
-                    }
-                }, 1000);
             }
         }
+
+        // Set an interval to check the leaderboard state every 3 seconds
+        setInterval(checkLeaderboardState, 3000); // 3000ms = 3 seconds
     
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {

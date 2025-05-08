@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 08, 2025 at 08:15 AM
+-- Generation Time: May 08, 2025 at 01:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -184,6 +184,25 @@ CREATE TABLE `Event_Results` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `leaderboard_status`
+--
+
+CREATE TABLE `leaderboard_status` (
+  `id` int(11) NOT NULL,
+  `is_on` tinyint(1) NOT NULL,
+  `end_time` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `leaderboard_status`
+--
+
+INSERT INTO `leaderboard_status` (`id`, `is_on`, `end_time`) VALUES
+(1, 1, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `rank_scores`
 --
 
@@ -193,6 +212,24 @@ CREATE TABLE `rank_scores` (
   `rank` varchar(10) NOT NULL,
   `score` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `registration_status`
+--
+
+CREATE TABLE `registration_status` (
+  `id` int(11) NOT NULL,
+  `is_open` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `registration_status`
+--
+
+INSERT INTO `registration_status` (`id`, `is_open`) VALUES
+(1, 0);
 
 --
 -- Indexes for dumped tables
@@ -232,9 +269,21 @@ ALTER TABLE `Event_Results`
   ADD UNIQUE KEY `Roll_Number` (`Roll_Number`,`Event`);
 
 --
+-- Indexes for table `leaderboard_status`
+--
+ALTER TABLE `leaderboard_status`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `rank_scores`
 --
 ALTER TABLE `rank_scores`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `registration_status`
+--
+ALTER TABLE `registration_status`
   ADD PRIMARY KEY (`id`);
 
 --
