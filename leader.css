@@ -129,6 +129,12 @@ body {
     margin-top: 200px;
 }
 
+
+
+
+
+
+
 .container1, .container2,.container3, .container4 {
     /* Individual champion containers with 4 columns */
     max-width: 1000px;
@@ -188,11 +194,10 @@ th {
 /* Specific table styles */
 #scoreboard {
     /* 3-column table */
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
-#scoreboard th:nth-child(1) { width: 20%; }
 #scoreboard th:nth-child(2) { width: 50%; }
 #scoreboard th:nth-child(3) { width: 30%; }
 
@@ -279,9 +284,9 @@ tbody tr:hover {
     }
 
     .nav-links {
-    display: flex;
-    gap: 30px;
-    margin-left: 0px;
+        display: flex;
+        gap: 30px;
+        margin-left: 0px;
     }
 
     
@@ -323,6 +328,13 @@ tbody tr:hover {
     .container, .container1, .container2, .container3, .container4{
         padding: 1.5rem;
     }
+
+    #scoreboard {
+        /* 3-column table */
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
     
     th, td {
         padding: 0.75rem;
@@ -341,16 +353,27 @@ tbody tr:hover {
     }
     
     /* Make tables scroll horizontally on small screens */
-    table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
+
     
     .container, .container1, .container2 {
         padding: 1rem;
         width: 95%;
     }
+    #scoreboard {
+        /* 3-column table */
+
+        max-width: 900px;
+    }
+
+    #scoreboard_ind{
+        /* 3-column table */
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        max-width: 900px;
+    }
+
+
 }
 
 /* Animation for table rows */

@@ -683,6 +683,32 @@ document.getElementById("updateParticipant").addEventListener("click", function 
 });
 
 
+document.getElementById("deleteParticipant").addEventListener("click", function () {
+    let chestNumber = document.getElementById("searchChestNumber").value.trim(); // Get chest number from search bar
+    
+    let deleteData = {
+        chestNumber: chestNumber,  // **Include chest number**
+    };
+
+
+    fetch("delete_participant.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(deleteData)
+    })
+    .then(response => response.text())
+    .then(data => {
+        // console.log("Response from server:", data);
+        alert("Participant Deleted successfully!");
+        closeEditDialog();  // Close modal
+        fetchEventResults(); // Refresh the table
+        location.reload();
+    })
+    .catch(error => console.error("Error Deleting participant:", error));
+});
+
+
+
 // disable function
 
 document.addEventListener("DOMContentLoaded", function () {

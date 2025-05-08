@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(res => res.json())
         .then(data => {
             renderScoreboard(data);
-            calculateIndividualChampions(data);
-            calculateIndividualChampionsStrict(data);
+            findTop5MaleChampions(data);
+            findTop5FemaleChampions(data);
             topOnStagePerformers(data);
             topOffStagePerformers(data);
         })
@@ -28,60 +28,14 @@ const renderScoreboard = (data) => {
     const tbody = document.querySelector("#scoreboard tbody");
     tbody.innerHTML = sortedScores.map(([label, score], i) => `
         <tr>
-            <td>${String(i + 1).padStart(2, "0")}</td>
             <td>${label}</td>
             <td>${score}</td>
         </tr>
     `).join("");
 };
 
-const calculateIndividualChampions = (data) => {
-    const individuals = {};
 
-    data.forEach(({ Roll_Number, Name, Gender, Score, Degree, Year }) => {
-        if (!Gender || !Roll_Number) return;
-
-        if (!individuals[Gender]) individuals[Gender] = {};
-
-        if (!individuals[Gender][Roll_Number]) {
-            individuals[Gender][Roll_Number] = {
-                name: Name,
-                total: 0,
-                degree: Degree,
-                year: Year
-            };
-        }
-
-        individuals[Gender][Roll_Number].total += parseInt(Score) || 0;
-    });
-
-    const titles = {
-        Male: "Kalaprathibha",
-        Female: "Kalathilakam"
-    };
-
-    const rows = Object.entries(titles).map(([gender, title]) => {
-        const group = individuals[gender];
-        if (!group) return '';
-
-        const [roll, { name, total, degree, year }] = Object.entries(group)
-            .sort(([, a], [, b]) => b.total - a.total)[0];
-
-        return `
-            <tr>
-                <td>${title}</td>
-                <td>${name}</td>
-                <td>${roll}</td>
-                <td>${degree} ${year} Year</td>
-                <td>${total}</td>
-            </tr>
-        `;
-    });
-
-    document.getElementById("champion").innerHTML = rows.join("");
-};
-
-const calculateIndividualChampionsStrict = (data) => {
+const getEligibleParticipants = (data) => {
     const participants = {};
 
     data.forEach(({ Roll_Number, Name, Gender, Score, event_Type, stage, Degree, Year }) => {
@@ -103,37 +57,49 @@ const calculateIndividualChampionsStrict = (data) => {
         participants[Roll_Number].stages.add(stage);
     });
 
-    const filtered = Object.entries(participants)
-        .filter(([, p]) => p.stages.has("on") && p.stages.has("off"));
+    return Object.entries(participants)
+        .filter(([, p]) => p.stages.has("on") || p.stages.has("off"))
+        .map(([roll, p]) => ({ ...p, roll }));
+};
 
-    const winners = { Male: null, Female: null };
+// Function to get the top 5 male champions
+const findTop5MaleChampions = (data) => {
+    const eligible = getEligibleParticipants(data);
+    const males = eligible.filter(p => p.gender === "Male");
 
-    filtered.forEach(([roll, data]) => {
-        const { gender, total } = data;
-        if (!winners[gender] || total > winners[gender].total) {
-            winners[gender] = { ...data, roll };
-        }
-    });
+    // Sort by total score in descending order and get top 5
+    const topMales = males.sort((a, b) => b.total - a.total).slice(0, 5);
 
-    const titles = {
-        Male: "Kalaprathibha",
-        Female: "Kalathilakam"
-    };
+    const rows = topMales.map(male => `
+        <tr>
+            <td>${male.name}</td>
+            <td>${male.roll}</td>
+            <td>${male.degree} ${male.year} Year</td>
+            <td>${male.total}</td>
+        </tr>
+    `).join('');
 
-    const rows = Object.entries(winners).map(([gender, champ]) => {
-        if (!champ) return '';
-        return `
-            <tr>
-                <td>${titles[gender]}</td>
-                <td>${champ.name}</td>
-                <td>${champ.roll}</td>
-                <td>${champ.degree} ${champ.year} Year</td>
-                <td>${champ.total}</td>
-            </tr>
-        `;
-    });
+    document.getElementById("champion").innerHTML = rows;
+};
 
-    document.getElementById("champion_strict").innerHTML = rows.join("");
+// Function to get the top 5 female champions
+const findTop5FemaleChampions = (data) => {
+    const eligible = getEligibleParticipants(data);
+    const females = eligible.filter(p => p.gender === "Female");
+
+    // Sort by total score in descending order and get top 5
+    const topFemales = females.sort((a, b) => b.total - a.total).slice(0, 5);
+
+    const rows = topFemales.map(female => `
+        <tr>
+            <td>${female.name}</td>
+            <td>${female.roll}</td>
+            <td>${female.degree} ${female.year} Year</td>
+            <td>${female.total}</td>
+        </tr>
+    `).join('');
+
+    document.getElementById("champion_strict").innerHTML = rows;
 };
 
 

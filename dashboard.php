@@ -150,8 +150,10 @@ if (!isset($_SESSION['username'])) {
                 </table>
 
                 
-                <!-- Update Button -->
+                <!-- Update & Delete Button -->
                 <button id="updateParticipant" class="update-btn">Update</button>
+                <button id="deleteParticipant" class="delete-btn">Delete Participant</button>
+
             </div>
         </div>
 
