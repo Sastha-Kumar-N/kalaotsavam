@@ -1,0 +1,17 @@
+# Disable directory listing
+Options -Indexes
+
+# Set default page when accessing directory
+DirectoryIndex dashboard.php
+
+# Redirect www to non-www (optional)
+# RewriteEngine On
+# RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+# RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# Enable rewrite engine (for clean URLs, optional)
+# RewriteEngine On
+# RewriteRule ^event/([0-9]+)$ event.php?id=$1 [L]
+
+# Custom 404 error page (optional)
+# ErrorDocument 404 /kalaotsavam/404.html
