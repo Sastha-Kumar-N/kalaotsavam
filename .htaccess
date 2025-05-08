@@ -2,13 +2,9 @@
 Options -Indexes
 
 # Set default page when accessing directory
-DirectoryIndex index1.html
+DirectoryIndex index.html
 
-# Redirect root domain to main event page
-RewriteEngine On
-RewriteCond %{HTTP_HOST} ^(www\.)?asbtevents\.in$ [NC]
-RewriteCond %{REQUEST_URI} ^/$
-RewriteRule ^$ https://asbtevents.in/kalaotsavam/index1.html [R=301,L]
+L]
 
 # Redirect www to non-www (optional)
 # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
@@ -16,6 +12,3 @@ RewriteRule ^$ https://asbtevents.in/kalaotsavam/index1.html [R=301,L]
 
 # Enable rewrite engine (for clean URLs, optional)
 # RewriteRule ^event/([0-9]+)$ event.php?id=$1 [L]
-
-# Custom 404 error page (optional)
-# ErrorDocument 404 /kalaotsavam/404.html
