@@ -16,6 +16,8 @@ if (!isset($_SESSION['username'])) {
     <title>Event Registration Dashboard</title>
     <link rel="icon" href="title_logo.png" type="image/png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
@@ -43,6 +45,9 @@ if (!isset($_SESSION['username'])) {
 
 
     <div class="function-container">
+        <button class="overview-btn" onclick="loadOverview()">Overview</button>
+        <button class="schedule-btn" onclick="schedule()">Announcement</button>
+        <button class="card-btn" onclick="opencardDialog()">Download Card</button>
         <button id="registration-btn" class="registration-btn" onclick="registrationManager.toggleStatus()">Close Registration</button>
         <button id="leader-btn" class="leaderboard-btn" onclick="toggleLeaderboard()">Leaderboard ON</button>
         <button class="score-btn" onclick="score()">Update Score</button>
@@ -53,6 +58,8 @@ if (!isset($_SESSION['username'])) {
         <button id="submitScores" class="download-btn">Submit</button>
         <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
+
+
 
 
     <div class="container">
@@ -85,7 +92,19 @@ if (!isset($_SESSION['username'])) {
             </select>
 
         </div>
-        <!-- Filter Options -->
+        <div id="cardDialog" class="modal" style="display: none; border: 1px solid black;">
+            <div class="modal-content">
+                <span class="close" onclick="closecardDialog()">&times;</span>
+                <h2>Download Chest Number </h2>
+                <!-- Search Section -->
+                <div class="search-container">
+                    <input type="text" id="searchChestNumber1" placeholder="Enter Chest Number">
+                    <button class ='search-btn' onclick="searchParticipant1()">Search</button>
+                </div>
+                <div id="cardContainer"></div>
+
+            </div>
+        </div>
        
 
         <div id="editDialog" class="modal" style="display: none; border: 1px solid black;">
@@ -176,8 +195,32 @@ if (!isset($_SESSION['username'])) {
             <button onclick="addEventInput(false)">Add Individual Event</button>
             <button onclick="addEventInput(true)">Add Group Event</button>
             <button onclick="submitNewEvents()">Add Events</button>
-            <!-- <button onclick="closeAddEventDialog()">Cancel</button> -->
         </div>
+
+        <div id="scheduleDialog" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; max-width: 600px; width: 90%;">
+            <h3>Announcements & Schedules</h3>
+
+            <label for="announcementText"><strong>Announcement (will scroll vertically)</strong></label>
+            <textarea id="announcementText" rows="4" style="width: 100%; margin-bottom: 20px;" placeholder="Type your announcement here..."></textarea>
+
+            <div id="scheduleInputs"></div>
+
+            <div style="margin-top: 20px;">
+                <button onclick="scheduleInput()">Add Schedule</button>
+                <button onclick="push()">Push</button>
+                <span class="close" onclick="closescheduleDialog()" style="float:right; font-size: 20px; cursor: pointer;">&times;</span>
+            </div>
+        </div>
+
+
+        <!-- Dialog -->
+        <div id="overviewDialog" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; max-width: 600px; width: 90%;">
+            <h3>Overview</h3>
+            <div style="margin-top: 20px;">
+                <span class="close" onclick="closeoverviewDialog()" style="float:right; font-size: 20px; cursor: pointer;">&times;</span>
+            </div>
+        </div>
+
 
         <!-- Leaderboard Off Modal -->
         <div id="leaderboardOffModal" class="modal">

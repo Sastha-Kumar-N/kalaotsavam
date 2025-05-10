@@ -36,6 +36,69 @@ function loadEventLists() {
 // Call this on page load
 document.addEventListener("DOMContentLoaded", loadEventLists);
 
+function opencardDialog() {
+    document.getElementById("cardDialog").style.display = "flex";
+}
+
+function closecardDialog() {
+    document.getElementById("cardDialog").style.display = "none";
+
+    // Clear the search bar input
+    let searchBar = document.getElementById("searchChestNumber");
+    if (searchBar) searchBar.value = ""; 
+
+        // Clear the card container
+    let cardContainer = document.getElementById("cardContainer");
+    if (cardContainer) cardContainer.innerHTML = "";
+
+}
+
+function searchParticipant1() {
+    let chestNumber = document.getElementById("searchChestNumber1").value.trim();
+    if (!chestNumber) {
+        alert("Please enter a Chest Number");
+        return;
+    }
+
+    fetch("event.php")
+        .then(response => response.json())
+        .then(data => {
+            let participant = data.find(row => row.Chest_Number == chestNumber);
+            if (!participant) {
+                document.getElementById("cardContainer").innerHTML = "<p>Participant not found.</p>";
+                return;
+            }
+
+            document.getElementById("cardContainer").innerHTML = `
+                <div class="card-wrapper">
+                    <div id="idCard" class="id-card" style="border: 1px solid #000; padding: 20px; width: 400px;">
+                        <h2>Chest Number Card</h2>
+                        <p><strong>Name:</strong> ${participant.Name}</p>
+                        <p><strong>Roll Number:</strong> ${participant.Roll_Number}</p>
+                        <p><strong>Degree:</strong> ${participant.Degree}</p>
+                        <p><strong>Year:</strong> ${participant.Year}</p>
+                        <p><strong>Course:</strong> ${participant.Course}</p>
+                        <p><strong>Chest Number:</strong> ${participant.Chest_Number}</p>
+                    </div>
+                    <button id="downloadCard">Download Card</button>
+                </div>
+            `;
+
+            // Download functionality
+            document.getElementById("downloadCard").addEventListener("click", function () {
+                html2canvas(document.getElementById("idCard")).then(canvas => {
+                    let link = document.createElement("a");
+                    link.href = canvas.toDataURL("image/png");
+                    link.download = "Chest_Number.png";
+                    link.click();
+                });
+            });
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            document.getElementById("cardContainer").innerHTML = "<p>Error fetching data.</p>";
+        });
+}
 
 
 
@@ -199,6 +262,13 @@ function logout() {
 }
 
 function downloadExcel() {
+    let heading = document.getElementById("eventFilter");
+    let eventName = heading.options[heading.selectedIndex].text.trim();  // Get selected text
+
+    // Sanitize filename to remove invalid characters
+    let safeEventName = eventName.replace(/[^a-z0-9]/gi, '_');
+
+    
     let table = document.getElementById("eventTable");
     let tableClone = table.cloneNode(true);
     
@@ -222,7 +292,7 @@ function downloadExcel() {
     // Create workbook and export
     let wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Event Data");
-    XLSX.writeFile(wb, "Event_Registration.xlsx");
+    XLSX.writeFile(wb, `${safeEventName}_Registration.xlsx`);
 }
 
 
@@ -1006,3 +1076,128 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+
+// Anouncemets & schedule
+
+function schedule() {
+    document.getElementById("scheduleDialog").style.display = "block";
+}
+
+const closescheduleDialog = () => {
+    document.getElementById("scheduleDialog").style.display = "none";
+};
+  
+
+
+let scheduleData = [];
+
+function scheduleInput() {
+  const inputContainer = document.getElementById('scheduleInputs');
+  const block = document.createElement('div');
+  block.classList.add('input-block');
+  block.innerHTML = `
+    <input type="text" placeholder="Date (e.g., 12)" class="date" />
+    <input type="text" placeholder="Month (e.g., May)" class="month" />
+    <input type="text" placeholder="Day (e.g., Monday)" class="day" />
+    <input type="text" placeholder="Venue" class="venue" />
+    <input type="text" placeholder="Events" class="events" />
+    <input type="text" placeholder="Times" class="times" />
+    <input type="text" placeholder="Coordinator" class="coordinator" />
+    <input type="text" placeholder="Phone" class="phone" />
+    <button onclick="this.parentElement.remove()">🗑️</button>
+    <hr/>
+  `;
+  inputContainer.appendChild(block);
+}
+
+function push() {
+  const inputs = document.querySelectorAll('#scheduleInputs .input-block');
+  const data = [];
+
+  inputs.forEach(block => {
+    data.push({
+      date: block.querySelector('.date').value,
+      month: block.querySelector('.month').value,
+      day: block.querySelector('.day').value,
+      venue: block.querySelector('.venue').value,
+      events: block.querySelector('.events').value,
+      times: block.querySelector('.times').value,
+      coordinator: block.querySelector('.coordinator').value,
+      phone: block.querySelector('.phone').value
+    });
+  });
+
+  const announcement = document.getElementById('announcementText').value;
+
+  fetch('schedule.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ schedule: data, announcement: announcement })
+  })
+  .then(res => res.text())
+  .then(response => {
+    alert("Schedule and announcement pushed successfully!");
+    closescheduleDialog();
+  })
+  .catch(err => alert("Failed to push data."));
+}
+
+
+
+// overview
+
+function overview() {
+    document.getElementById("overviewDialog").style.display = "block";
+}
+
+const closeoverviewDialog = () => {
+    document.getElementById("overviewDialog").style.display = "none";
+};
+
+async function loadOverview() {
+    const dialog = document.getElementById("overviewDialog");
+    const contentArea = document.createElement("div");
+
+    try {
+        const response = await fetch("event.php");
+        const data = await response.json();
+
+        const totalRegistrations = data.length;
+        const eventCounts = {};
+
+        data.forEach(row => {
+            for (let i = 1; i <= 10; i++) {
+                const event = row[`Event${i}`];
+                if (event && event.trim() !== "") {
+                    eventCounts[event] = (eventCounts[event] || 0) + 1;
+                }
+            }
+
+            const groupEvent = row.Group_event || row.GB;
+            if (groupEvent && groupEvent.trim() !== "") {
+                eventCounts[groupEvent] = (eventCounts[groupEvent] || 0) + 1;
+            }
+        });
+
+        contentArea.innerHTML = `
+            <p><strong>Total Participants Registered:</strong> ${totalRegistrations}</p>
+            <h4>Event-wise Registration Count:</h4>
+            <div>
+            ${Object.entries(eventCounts).map(([event, count]) => 
+                `<div><strong>${event}</strong>: ${count}</div>`
+            ).join('')}
+            </div>
+        `;
+    } catch (error) {
+        contentArea.innerHTML = `<p style="color:red;">Failed to load data.</p>`;
+        console.error("Error fetching registration data:", error);
+    }
+
+    const existing = dialog.querySelector("div.dynamic-content");
+    if (existing) existing.remove();
+
+    contentArea.className = "dynamic-content";
+    dialog.querySelector("h3").after(contentArea);
+    dialog.style.display = "block";
+}

@@ -112,7 +112,7 @@ body {
     justify-content: flex-end;
 }
 
-.logout-btn, .download-btn, .edit-btn, .disable-btn, .score-btn, .addevent-btn, .leaderboard-btn, .registration-btn{
+.logout-btn, .download-btn, .edit-btn, .disable-btn, .score-btn, .addevent-btn, .leaderboard-btn, .registration-btn, .card-btn, .schedule-btn, .overview-btn{
     background-color: #cd0947;
     color: white;
     padding: 10px 15px;
@@ -127,7 +127,7 @@ body {
     min-width: 110px;
 }
 
-.logout-btn:hover, .download-btn:hover, .edit-btn:hover, .disable-btn:hover, .score-btn:hover, .addevent-btn:hover,.leaderboard-btn:hover, .registration-btn:hover {
+.logout-btn:hover, .download-btn:hover, .edit-btn:hover, .disable-btn:hover, .score-btn:hover, .addevent-btn:hover,.leaderboard-btn:hover, .registration-btn:hover, .card-btn:hover, .schedule-btn:hover, .overview-btn:hover{
     background-color: #b50039;
 }
 
@@ -294,7 +294,7 @@ th:nth-child(1), th:nth-child(2), th:nth-child(6), th:nth-child(7) {
         gap: 5px;
     }
 
-    .logout-btn, .download-btn, .edit-btn {
+    .logout-btn, .download-btn, .edit-btn, .card-btn{
         font-size: 14px;
         padding: 8px 12px;
         min-width: auto;
@@ -312,7 +312,7 @@ th:nth-child(1), th:nth-child(2), th:nth-child(6), th:nth-child(7) {
         align-items: center;
     }
 
-    .logout-btn, .download-btn, .edit-btn {
+    .logout-btn, .download-btn, .edit-btn, .card-btn{
         width: 100%;
         max-width: 200px;
     }
@@ -736,3 +736,237 @@ td.yes select {
     background-color: #b02a37;
   }
   
+
+  /* Card Container */
+#cardContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+}
+
+/* ID Card Styling */
+.card-wrapper {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px #783137;
+    text-align: center;
+}
+
+.id-card {
+    padding: 20px;
+    border: 2px solid #cd0947;
+    border-radius: 10px;
+    width: auto; /* Changed from fixed 500px */
+    min-width: 300px; /* Minimum width */
+    max-width: 800px;
+    margin: 0 auto 20px;
+    background-color: #fafafa;
+    word-break: break-word;
+    white-space: normal;
+    
+}
+
+.id-card h2 {
+    color: #cd0947;
+    font-size: 25px;
+    margin-bottom: 10px;
+    word-break: break-word;
+}
+
+/* --- Text Styling Inside the Card --- */
+.id-card p {
+    font-size: 21px;
+    margin: 8px 0;
+    
+}
+
+/* Download Button */
+#downloadCard {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #cd0947;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#downloadCard:hover {
+    background-color: #910635;
+}
+
+
+/* Anouncements & schedule */
+
+#scheduleDialog {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 30px 40px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    width: 400px;
+    max-width: 90%;
+    font-family: "Segoe UI", sans-serif;
+}
+  
+  /* Title */
+#scheduleDialog h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* Close button */
+#scheduleDialog .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #888;
+}
+#scheduleDialog .close:hover {
+    color: #000;
+}
+
+/* Event input block */
+.event-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Inputs and dropdowns */
+.event-wrapper input[type="text"],
+.event-wrapper select {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #0a0a0a;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+/* Buttons */
+#scheduleDialog button {
+    background-color: #cd0947;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 5px;
+    transition: background-color 0.2s ease;
+}
+#scheduleDialog button:hover {
+    background-color: rgb(160, 36, 48);
+}
+
+/* Remove button inside input block */
+.event-wrapper button {
+    background-color: #cd0947;
+    padding: 8px 10px;
+}
+.event-wrapper button:hover {
+    background-color: #b02a37;
+}
+
+
+
+/* overview */
+
+#overviewDialog {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 30px 40px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    width: 400px;
+    max-width: 90%;
+    font-family: "Segoe UI", sans-serif;
+}
+  
+  /* Title */
+#overviewDialog h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* Close button */
+#overviewDialog .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #888;
+}
+#overviewDialog .close:hover {
+    color: #000;
+}
+
+/* Event input block */
+.event-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Inputs and dropdowns */
+.event-wrapper input[type="text"],
+.event-wrapper select {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #0a0a0a;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+/* Buttons */
+#overviewDialog button {
+    background-color: #cd0947;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 5px;
+    transition: background-color 0.2s ease;
+}
+#overviewDialog button:hover {
+    background-color: rgb(160, 36, 48);
+}
+
+/* Remove button inside input block */
+.event-wrapper button {
+    background-color: #cd0947;
+    padding: 8px 10px;
+}
+.event-wrapper button:hover {
+    background-color: #b02a37;
+}

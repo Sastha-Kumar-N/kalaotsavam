@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Announcements</title>
+  <link rel="icon" href="title_logo.png" type="image/png">
+  <link rel="stylesheet" href="schedule.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo left-logo">
+        <img src="ASBT_logo.png" alt="Left Logo" id="leftLogo">
+    </div>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="leaderboard.html">Leaderboard</a>
+    </div>
+    <div class="logo right-logo">
+        <img src="creatome_white.png" alt="Right Logo" id="rightLogo">
+    </div>
+    <div class="menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+  </nav>
+<!-- Announcement Section -->
+<div class="announcement-wrapper">
+  <div class="announcement-scroller" id="announcement-scroller"></div>
+</div>
+
+<!-- Date Selector -->
+<div class="date-container" id="date-selector"></div>
+
+<!-- Event Stage Cards -->
+<div class="stage-container" id="stage-container"></div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    fetch("get_schedule.php")
+      .then(res => res.json())
+      .then(data => {
+        // Render all announcements
+        const scroller = document.getElementById("announcement-scroller");
+        scroller.innerHTML = "";
+        data.announcements.forEach(text => {
+          const item = document.createElement("div");
+          item.className = "announcement-item";
+          item.innerText = "📢 " + text;
+          scroller.appendChild(item);
+        });
+  
+        // Continue rendering schedule (same as before)
+        const grouped = {};
+        data.schedule.forEach(item => {
+          if (!grouped[item.date]) grouped[item.date] = [];
+          grouped[item.date].push(item);
+        });
+  
+        const dateSelector = document.getElementById("date-selector");
+        const stageContainer = document.getElementById("stage-container");
+  
+        Object.keys(grouped).forEach(date => {
+          const dateBox = document.createElement("div");
+          dateBox.className = "date-box";
+          dateBox.dataset.date = date;
+          dateBox.innerHTML = `
+            <div class="day">${date}</div>
+            <div class="label">${grouped[date][0].month}<br><span>${grouped[date][0].day}</span></div>
+          `;
+          dateBox.addEventListener("click", () => {
+            renderStages(date);
+          });
+          dateSelector.appendChild(dateBox);
+        });
+  
+        renderStages(Object.keys(grouped)[0]);
+  
+        function renderStages(date) {
+          stageContainer.innerHTML = "";
+          grouped[date].forEach(item => {
+            const card = document.createElement("div");
+            card.className = "stage-card";
+            card.innerHTML = `
+              <p><strong>Venue:</strong> ${item.venue}</p>
+              <p><strong>Event:</strong> ${item.events} - ${item.times}</p>
+              <p><strong>Event Coordinator:</strong> ${item.coordinator} (${item.phone})</p>
+          `;
+            stageContainer.appendChild(card);
+          });
+        }
+      });
+  });
+  </script>
+    
+  
+</body>
+</html>
