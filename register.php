@@ -40,8 +40,14 @@ $group_event = $_POST['event']?? '';
 $participants_list = isset($_POST['additional_participants']) ? $_POST['additional_participants'] : [];
 
 // **Ensure main roll number is also in the participant list**
-array_unshift($participants_list, $roll_number); // Add the main roll number at the start
-$participants_list = implode(",", array_unique($participants_list)); // Convert array to comma-separated string (remove duplicates)
+// **Only add main roll number if group event is selected**
+if (!empty($group_event)) { // assuming event5 is the group event field
+    array_unshift($participants_list, $roll_number);
+    $participants_list = implode(",", array_unique($participants_list));
+} else {
+    $participants_list = ''; // no group event selected, so store an empty list
+}
+
 
 // Validate phone number (must be 10 digits)
 if (!preg_match('/^[0-9]{10}$/', $phone_number)) {
@@ -55,7 +61,7 @@ if (!preg_match($pattern, $roll_number)) {
 }
 
 // **Event Selection Validation: No Duplicate Events Allowed**
-$events = array_filter([$event1, $event2, $event3, $event4, $event5]); // Remove empty values
+$events = array_filter([$event1, $event2, $event3, $event4, $event5, $event6, $event7, $event8, $event9, $event10]); // Remove empty values
 if (count($events) !== count(array_unique($events))) {
     die("You cannot select the same event more than once.");
 }
@@ -72,14 +78,14 @@ if ($result->num_rows > 0) {
 }
 
 // **Prevent duplicate group event registration**
-if (!empty($event5)) {
+if (!empty($group_event)) {
     $participantArray = explode(",", $participants_list); // Convert string to array
 
     foreach ($participantArray as $participant) {
         $participant = trim($participant);
-        $check_query = "SELECT * FROM Event_Registration WHERE FIND_IN_SET(?, group_event_Participants) AND Event5 = ?";
+        $check_query = "SELECT * FROM Event_Registration WHERE FIND_IN_SET(?, group_event_Participants) AND Group_event = ?";
         $stmt = $conn->prepare($check_query);
-        $stmt->bind_param("ss", $participant, $event5);
+        $stmt->bind_param("ss", $participant, $group_event);
         $stmt->execute();
         $result = $stmt->get_result();
 
