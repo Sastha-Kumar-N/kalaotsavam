@@ -816,6 +816,9 @@ td.yes select {
     width: 400px;
     max-width: 90%;
     font-family: "Segoe UI", sans-serif;
+    max-height: 700px;
+    overflow-y: auto;
+
 }
   
   /* Title */
@@ -886,6 +889,51 @@ td.yes select {
 
 
 
+/* dlt schedules and announcements */
+.scrollable-box {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fefefe;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  
+  .entry-block {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+  }
+  
+  .entry-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .entry-content span,
+  .entry-content div {
+    flex: 1;
+    font-size: 14px;
+  }
+  
+  .delete-btn {
+    background-color: #c2185b;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .delete-btn:hover {
+    background-color: #ad1457;
+  }
+  
+
+
 /* overview */
 
 #overviewDialog {
@@ -903,6 +951,8 @@ td.yes select {
     width: 400px;
     max-width: 90%;
     font-family: "Segoe UI", sans-serif;
+    overflow-y: auto;
+    height: 600px;
 }
   
   /* Title */

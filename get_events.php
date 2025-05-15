@@ -4,7 +4,7 @@
 // Database connection
 $host = "localhost";
 $user = "root";
-$password = "";
+$password = "co*/YEYMh.URZ93@";
 $dbname = "ASBT_Kalotsavam";
 
 $conn = new mysqli($host, $user, $password, $dbname);

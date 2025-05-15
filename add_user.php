@@ -3,11 +3,11 @@
 $db_host = 'localhost';
 $db_name = 'ASBT_Kalotsavam';
 $db_user = 'root';
-$db_pass = '';
+$db_pass = 'co*/YEYMh.URZ93@';
 
 // User data (in a real application, this would come from a form)
-$username = 'user';
-$password = 'user';
+$username = 'admin';
+$password = 'Rtghiuyj@67854#.';
 
 try {
     // Create database connection

@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = new mysqli('localhost', 'root', '', 'ASBT_Kalotsavam');
+$conn = new mysqli('localhost', 'root', 'co*/YEYMh.URZ93@', 'ASBT_Kalotsavam');
 if ($conn->connect_error) {
     echo json_encode(['success' => false, 'error' => 'DB connection failed']);
     exit;

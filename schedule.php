@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
 $user = "root";
-$password = "";
+$password = "co*/YEYMh.URZ93@";
 $database = "ASBT_Kalotsavam"; // Replace with your DB name
 
 $conn = new mysqli($host, $user, $password, $database);
@@ -11,9 +11,11 @@ if ($conn->connect_error) {
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Insert announcement
-$announcement = $conn->real_escape_string($data['announcement']);
-$conn->query("INSERT INTO announcements (text) VALUES ('$announcement')");
+// Check if announcement is not empty before inserting
+if (!empty($data['announcement'])) {
+  $announcement = $conn->real_escape_string($data['announcement']);
+  $conn->query("INSERT INTO announcements (text) VALUES ('$announcement')");
+}
 
 // Insert schedules
 foreach ($data['schedule'] as $item) {

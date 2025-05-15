@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Connect to database
 $host = "localhost";
 $user = "root";
-$password = ""; // Or your MySQL password
+$password = "co*/YEYMh.URZ93@"; // Or your MySQL password
 $dbname = "ASBT_Kalotsavam";
 
 $conn = new mysqli($host, $user, $password, $dbname);

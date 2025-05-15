@@ -7,7 +7,6 @@
   <link rel="icon" href="title_logo.png" type="image/png">
   <link rel="stylesheet" href="schedule.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
 </head>
 <body>
   <nav class="navbar">
@@ -27,108 +26,140 @@
         <span></span>
     </div>
   </nav>
-<!-- Announcement Section -->
-<div class="announcement-wrapper">
-  <div class="announcement-scroller" id="announcement-scroller"></div>
-</div>
 
-<!-- Date Selector -->
-<div class="date-container" id="date-selector"></div>
+  <!-- Announcement Section -->
+  <div class="announcement-wrapper">
+    <div class="announcement-scroller" id="announcement-scroller"></div>
+  </div>
 
-<!-- Event Stage Cards -->
-<div class="stage-container" id="stage-container"></div>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-      // Mobile menu toggle
+  <div class="cancel">
+    <p><a href="Rules.pdf" target="blank">Click here </a>to view the list of cancelled events.</p>
+  </div>
+
+  <!-- Date Selector -->
+  <div class="date-container" id="date-selector"></div>
+
+  <!-- Event Stage Cards -->
+  <div class="stage-container" id="stage-container"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
       const menuToggle = document.querySelector('.menu-toggle');
       const navLinks = document.querySelector('.nav-links');
-      
+
       menuToggle.addEventListener('click', function() {
-          navLinks.classList.toggle('active');
-          menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        menuToggle.classList.toggle('active');
       });
+
       let lastScroll = 0;
       const navbar = document.querySelector('.navbar');
-      
+
       window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
-        
+
         if (currentScroll <= 0) {
-          // At top of page - always show navbar
           navbar.classList.remove('hidden');
           return;
         }
-        
+
         if (currentScroll > lastScroll && !navbar.classList.contains('hidden')) {
-          // Scrolling down - hide navbar
           navbar.classList.add('hidden');
         } else if (currentScroll < lastScroll && navbar.classList.contains('hidden')) {
-          // Scrolling up - show navbar
           navbar.classList.remove('hidden');
         }
-        
+
         lastScroll = currentScroll;
       });
-  });
 
+      // Auto-refresh the entire page every 60 seconds
+      setInterval(() => {
+        location.reload();
+      }, 10000);
+    });
 
-  document.addEventListener("DOMContentLoaded", () => {
-    fetch("get_schedule.php")
-      .then(res => res.json())
-      .then(data => {
-        // Render all announcements
-        const scroller = document.getElementById("announcement-scroller");
-        scroller.innerHTML = "";
-        data.announcements.forEach(text => {
-          const item = document.createElement("div");
-          item.className = "announcement-item";
-          item.innerText = "📢 " + text;
-          scroller.appendChild(item);
-        });
-  
-        // Continue rendering schedule (same as before)
-        const grouped = {};
-        data.schedule.forEach(item => {
-          if (!grouped[item.date]) grouped[item.date] = [];
-          grouped[item.date].push(item);
-        });
-  
-        const dateSelector = document.getElementById("date-selector");
-        const stageContainer = document.getElementById("stage-container");
-  
-        Object.keys(grouped).forEach(date => {
-          const dateBox = document.createElement("div");
-          dateBox.className = "date-box";
-          dateBox.dataset.date = date;
-          dateBox.innerHTML = `
-            <div class="day">${date}</div>
-            <div class="label">${grouped[date][0].month}<br><span>${grouped[date][0].day}</span></div>
-          `;
-          dateBox.addEventListener("click", () => {
-            renderStages(date);
+    document.addEventListener("DOMContentLoaded", () => {
+      // ✅ Set the current day you want to display
+      const currentDay = "15"; // Change this to the desired date
+
+      fetch("get_schedule.php")
+        .then(res => res.json())
+        .then(data => {
+          const scroller = document.getElementById("announcement-scroller");
+          scroller.innerHTML = "";
+          data.announcements.forEach(text => {
+            const item = document.createElement("div");
+            item.className = "announcement-item";
+            item.innerText = "📢 " + text;
+            scroller.appendChild(item);
           });
-          dateSelector.appendChild(dateBox);
-        });
-  
-        renderStages(Object.keys(grouped)[0]);
-  
-        function renderStages(date) {
-          stageContainer.innerHTML = "";
-          grouped[date].forEach(item => {
-            const card = document.createElement("div");
-            card.className = "stage-card";
-            card.innerHTML = `
-              <p><strong>Venue:</strong> ${item.venue}</p>
-              <p><strong>Event:</strong> ${item.events} - ${item.times}</p>
-              <p><strong>Event Coordinator:</strong> ${item.coordinator} (${item.phone})</p>
-          `;
-            stageContainer.appendChild(card);
+
+          const grouped = {};
+          data.schedule.forEach(item => {
+            if (!grouped[item.date]) grouped[item.date] = [];
+            grouped[item.date].push(item);
           });
-        }
-      });
-  });
+
+          const dateSelector = document.getElementById("date-selector");
+          const stageContainer = document.getElementById("stage-container");
+
+          Object.keys(grouped).forEach(date => {
+            const dateBox = document.createElement("div");
+            dateBox.className = "date-box";
+            dateBox.dataset.date = date;
+            dateBox.innerHTML = `
+              <div class="day">${date}</div>
+              <div class="label">${grouped[date][0].month}<br><span>${grouped[date][0].day}</span></div>
+            `;
+            dateBox.addEventListener("click", () => {
+              renderStages(date);
+              highlightSelectedDate(date);
+            });
+            dateSelector.appendChild(dateBox);
+          });
+
+          // ✅ Render the specified day or fallback to the first available date
+          if (grouped[currentDay]) {
+            renderStages(currentDay);
+            highlightSelectedDate(currentDay);
+          } else {
+            const firstDate = Object.keys(grouped)[0];
+            renderStages(firstDate);
+            highlightSelectedDate(firstDate);
+          }
+
+          function renderStages(date) {
+            stageContainer.innerHTML = "";
+            grouped[date].forEach(item => {
+              const card = document.createElement("div");
+              card.className = "stage-card";
+              card.innerHTML = `
+                <p><strong>Venue:</strong> ${item.venue}</p>
+                <p><strong>Event:</strong> ${item.events} - ${item.times}</p>
+                <p><strong>Event Coordinator:</strong> ${item.coordinator} (${item.phone})</p>
+              `;
+              stageContainer.appendChild(card);
+            });
+          }
+
+          function highlightSelectedDate(selectedDate) {
+            document.querySelectorAll(".date-box").forEach(box => {
+              box.classList.toggle("selected", box.dataset.date === selectedDate);
+            });
+          }
+        });
+    });
   </script>
-    
-  
+
+  <style>
+    /* Optional: highlight selected date box */
+    .date-box.selected {
+      color: white;
+      border-radius: 10px;
+      border-color: black;
+      transition: transform 0.3s;
+    }
+  </style>
+
 </body>
 </html>

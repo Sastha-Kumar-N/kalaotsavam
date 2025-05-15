@@ -200,12 +200,21 @@ if (!isset($_SESSION['username'])) {
         <div id="scheduleDialog" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; max-width: 600px; width: 90%;">
             <h3>Announcements & Schedules</h3>
 
-            <label for="announcementText"><strong>Announcement (will scroll vertically)</strong></label>
+            <label for="announcementText"><strong>Announcement</strong></label>
             <textarea id="announcementText" rows="4" style="width: 100%; margin-bottom: 20px;" placeholder="Type your announcement here..."></textarea>
 
-            <div id="scheduleInputs"></div>
+            <div id="scheduleInputs" class="scrollable-box"></div>
+            <div id="previousUpdates" style="margin-top: 20px;">
+                <h4>Previous Announcements</h4>
+                <div id="announcementList" class="scrollable-box"></div>
+
+                <h4 style="margin-top: 20px;">Previous Schedules</h4>
+                <div id="scheduleList" class="scrollable-box"></div>
+            </div>
+
 
             <div style="margin-top: 20px;">
+            <button onclick="scheduleget()">Previous Updates</button>
                 <button onclick="scheduleInput()">Add Schedule</button>
                 <button onclick="push()">Push</button>
                 <span class="close" onclick="closescheduleDialog()" style="float:right; font-size: 20px; cursor: pointer;">&times;</span>

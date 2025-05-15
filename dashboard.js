@@ -1086,6 +1086,7 @@ function schedule() {
 
 const closescheduleDialog = () => {
     document.getElementById("scheduleDialog").style.display = "none";
+    document.getElementById("announcementText").value = "";
 };
   
 
@@ -1112,36 +1113,116 @@ function scheduleInput() {
 }
 
 function push() {
-  const inputs = document.querySelectorAll('#scheduleInputs .input-block');
-  const data = [];
-
-  inputs.forEach(block => {
-    data.push({
-      date: block.querySelector('.date').value,
-      month: block.querySelector('.month').value,
-      day: block.querySelector('.day').value,
-      venue: block.querySelector('.venue').value,
-      events: block.querySelector('.events').value,
-      times: block.querySelector('.times').value,
-      coordinator: block.querySelector('.coordinator').value,
-      phone: block.querySelector('.phone').value
+    const inputs = document.querySelectorAll('#scheduleInputs .input-block');
+    const data = [];
+  
+    inputs.forEach(block => {
+      data.push({
+        date: block.querySelector('.date').value,
+        month: block.querySelector('.month').value,
+        day: block.querySelector('.day').value,
+        venue: block.querySelector('.venue').value,
+        events: block.querySelector('.events').value,
+        times: block.querySelector('.times').value,
+        coordinator: block.querySelector('.coordinator').value,
+        phone: block.querySelector('.phone').value
+      });
     });
-  });
+  
+    const announcement = document.getElementById('announcementText').value;
+  
+    // Only include announcement in payload if it's not empty
+    const requestData = { schedule: data };
+    if (announcement.trim() !== "") {
+      requestData.announcement = announcement;
+    }
+  
+    fetch('schedule.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestData)
+    })
+    .then(res => res.text())
+    .then(response => {
+      alert("Schedule and announcement pushed successfully!");
+      closescheduleDialog();
+    })
+    .catch(err => alert("Failed to push data."));
+  }
+  
 
-  const announcement = document.getElementById('announcementText').value;
+// delete schedule and announcements
 
-  fetch('schedule.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ schedule: data, announcement: announcement })
-  })
-  .then(res => res.text())
-  .then(response => {
-    alert("Schedule and announcement pushed successfully!");
-    closescheduleDialog();
-  })
-  .catch(err => alert("Failed to push data."));
-}
+function scheduleget() {
+    fetch('get_schedule.php')
+      .then(res => res.json())
+      .then(data => {
+        const annContainer = document.getElementById('announcementList');
+        const schContainer = document.getElementById('scheduleList');
+        annContainer.innerHTML = '';
+        schContainer.innerHTML = '';
+  
+        // Announcements
+        data.announcements.forEach((announcement, index) => {
+          if (!announcement.trim()) return; // Skip empty announcements
+          const div = document.createElement('div');
+          div.classList.add('entry-block');
+          div.innerHTML = `
+            <div class="entry-content">
+              <span>${announcement}</span>
+              <button class="delete-btn" onclick="deleteAnnouncement(${index})">🗑️ Delete</button>
+            </div>
+          `;
+          annContainer.appendChild(div);
+        });
+  
+        // Schedules
+        data.schedule.forEach(s => {
+          const div = document.createElement('div');
+          div.classList.add('entry-block');
+          const content = `
+            <strong>${s.date} ${s.month} (${s.day})</strong><br/>
+            Venue: ${s.venue || '-'}<br/>
+            Event: ${s.events || '-'}<br/>
+            Time: ${s.times || '-'}<br/>
+            Coordinator: ${s.coordinator || '-'} (${s.phone || '-'})
+          `;
+          div.innerHTML = `
+            <div class="entry-content">
+              <div style="flex:1">${content}</div>
+              <button class="delete-btn" onclick="deleteSchedule(${s.id})">🗑️ Delete</button>
+            </div>
+          `;
+          schContainer.appendChild(div);
+        });
+      })
+      .catch(err => {
+        alert("Failed to load previous updates.");
+      });
+  }
+        
+
+  function deleteAnnouncement(index) {
+    fetch('delete_schedule.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index })
+    })
+    .then(res => res.text())
+    .then(() => scheduleget());
+  }
+  
+  function deleteSchedule(id) {
+    fetch('delete_schedule.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    .then(res => res.text())
+    .then(() => scheduleget());
+  }
+    
+  
 
 
 

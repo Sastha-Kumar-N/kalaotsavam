@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
 $user = "root";
-$password = "";
+$password = "co*/YEYMh.URZ93@";
 $database = "ASBT_Kalotsavam"; // Replace with your DB name
 
 $conn = new mysqli($host, $user, $password, $database);

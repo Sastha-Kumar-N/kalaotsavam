@@ -390,3 +390,19 @@ body {
     }
 }
   
+.cancel {
+    height: 100px;
+    overflow: hidden;
+    background-color: #fff8e1;
+    border-top: 2px solid #ffd54f;
+    border-bottom: 2px solid #ffd54f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    margin-top: 20px;
+}
+
+.cancel p {
+    font-size: larger;
+}

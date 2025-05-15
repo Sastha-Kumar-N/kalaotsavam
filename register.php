@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 
 $servername = "localhost";
 $username = "root";
-$password = "";
+$password = "co*/YEYMh.URZ93@";
 $dbname = "ASBT_Kalotsavam";
 
 // Create connection

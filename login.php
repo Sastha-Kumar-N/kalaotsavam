@@ -3,7 +3,7 @@ session_start(); // Start session to store login state
 
 $host = "localhost"; // Change if necessary
 $user = "root"; // Change to your database username
-$password = ""; // Change to your database password
+$password = "co*/YEYMh.URZ93@"; // Change to your database password
 $database = "ASBT_Kalotsavam"; // Database name
 
 // Create a connection
