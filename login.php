@@ -1,35 +1,40 @@
 <?php
-session_start(); // Start session to store login state
+session_start();
 
-$host = "localhost"; // Change if necessary
-$user = "root"; // Change to your database username
-$password = "co*/YEYMh.URZ93@"; // Change to your database password
-$database = "ASBT_Kalotsavam"; // Database name
+$host = "localhost";
+$user = "root";
+$password = "co*/YEYMh.URZ93@";
+$database = "ASBT_Kalotsavam";
 
-// Create a connection
 $conn = new mysqli($host, $user, $password, $database);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = $_POST['password']; // Don't escape password since it's hashed
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    // Query to check credentials
-    $sql = "SELECT * FROM admin_users WHERE username='$username'";
-    $result = $conn->query($sql);
+    // Prepare statement
+    $stmt = $conn->prepare("SELECT password FROM admin_users WHERE username = ?");
+    if ($stmt === false) {
+        die("Prepare failed: " . $conn->error);
+    }
 
-    if ($result->num_rows == 1) {
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+
+    // Get result
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 1) {
         $row = $result->fetch_assoc();
-        
-        // Verify password (assuming it's hashed in the database)
+
+        // Verify password hash
         if (password_verify($password, $row['password'])) {
-            $_SESSION['username'] = $username; // Store session
-            header("Location: dashboard.php"); // Redirect to admin panel
+            $_SESSION['username'] = $username;
+            header("Location: dashboard.php");
             exit();
         } else {
             echo "<script>alert('Invalid username or password.'); window.location.href='admin.html';</script>";
@@ -37,6 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "<script>alert('Invalid username or password.'); window.location.href='admin.html';</script>";
     }
+
+    $stmt->close();
 }
 
 $conn->close();
